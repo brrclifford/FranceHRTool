@@ -148,34 +148,21 @@ export function WorkerEnrichmentForm({
                 </Select>
               </div>
 
-              {/* Job Title */}
-              <div className="space-y-2">
-                <Label htmlFor="job_title">Job Title *</Label>
-                <Input
-                  id="job_title"
-                  value={formData.job_title}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      job_title: e.target.value,
-                    }))
-                  }
-                />
-              </div>
-
-              {/* Job Specialisation Code */}
-              <div className="space-y-2">
-                <Label>Specialisation Code *</Label>
+              {/* Job Title / Specialisation */}
+              <div className="space-y-2 col-span-2">
+                <Label>Job Title / Specialisation *</Label>
                 <ComboboxWithFreeText
                   options={specOptions}
                   value={formData.job_specialisation_code}
-                  onChange={(val) =>
+                  onChange={(val) => {
+                    const spec = specialisations.find((s) => s.code === val);
                     setFormData((prev) => ({
                       ...prev,
                       job_specialisation_code: val,
-                    }))
-                  }
-                  placeholder="Select specialisation..."
+                      job_title: spec ? spec.title : val,
+                    }));
+                  }}
+                  placeholder="Select or type job title..."
                 />
               </div>
 

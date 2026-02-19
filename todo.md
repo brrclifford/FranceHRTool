@@ -54,6 +54,13 @@ Built the complete L'Oréal HR Tool from scratch as a Next.js 14 + Supabase app.
 - Combobox with free text entry for job specialisations and employee groups
 - Toast notifications via Sonner on submit/unenrich actions
 
+### Merge Job Title + Specialisation Code
+- [x] Removed separate "Job Title" text input and "Specialisation Code" combobox
+- [x] Replaced with single "Job Title / Specialisation" combobox spanning 2 columns
+- [x] On dropdown selection: sets `job_specialisation_code` to the code and `job_title` to the title (looked up from specialisations data)
+- [x] On free text entry: sets both fields to the typed value
+- [x] `isValid` check unchanged — both fields still required and will always be set together
+
 ### Blocker
 - Docker Desktop not installed, so `supabase start` can't run locally
 - Migrations are ready and will apply automatically when Supabase starts
