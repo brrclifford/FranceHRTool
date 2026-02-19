@@ -1,0 +1,58 @@
+ ## Features
+1) Manage Users on the LOR HR App: As a L'Oreal Admin user I want to be able to add/edit/delete LOR HR users from the LOR HRP App
+
+3) List of workers: As a LOR HR user I want to be able to see a list of newly created LOR statutory retail workers that require my attention
+
+4) Enrich Worker record	"As a LOR HR user I want to be able select an entry from the list in (3) and for a form to be displayed with the following fields :
+4a) OAPASS ID (read-only)
+4b) First name (read-only)
+4c) Last name (read-only)
+4d) L'Oreal email address (read-only)
+4e) StartDate (read-only)
+4f) Store Name (read-only)
+4g) SysID (read-only relates to store name)
+The following are all editable fields:
+4h) Pay Rate (input control, number)
+4i) Pay Type (single selection dropdown control, with these values: 'Hourly','Monthly')
+4j) Job Title & Job Specialisation Code (single selection dropdown control with an option to input free text (Job Title and Job Specilisation Code separately)). L'Oreal dropdown values are in 'Dropdown values' tab 'L'Oreal Job Specialisation & L'Oreal Job Title'
+4k) Employee Group Name  (single selection dropdown control with an option to input free text). L'Oreal dropdown values are in 'Dropdown values' tab 'L'Oreal Employee Group Name'
+4l) Is Full Time Employee, a check-box control
+4m) Contract Hours (input control, number)
+4n) Pay roll / User ID (input control, varchar)
+All fields editable fields are mandatory
+
+5) Submit Worker record	As a LOR HR user, after having completed the form in Feature 4, I want to be able submit the enriched Worker record so it can be added to Aesop systems (with a 'Submission confirmed' message)
+
+6) Edit and submit Worker record	"As a LOR HR user I want to be able to view previously submitted enriched Worker records, ie a history, so that I can edit them (i.e. in the event of changes) and then re-submit that record to Aesop Systems. Search and access via:
+6a) Viewing a list of all previously submitted records and be able to filter by OAPASS ID and email. Each record on this view should have a date and time of when it was submitted
+6b) Search by OAPASS ID
+For re-submisson the same form as that described in Feature 4 should be displayed
+
+ ## Dropdown values
+
+ 7) Drop-down values 'L'Oreal Job Specification Code' and 'L'Oreal Job Specification':
+
+L'Oreal Job Specialization Code	L'Oreal Job Specification
+JR000316	Skincare Expert
+JR000222	Store Manager
+JR000309	Beautician
+JR000224	Field Retail Manager
+JR000288	Deputy Store Manager
+JR000223	Retail Manager / Director
+JR000069	Make-Up Artist
+JR000215	Beauty Advisor
+JR000218	E-Beauty Advisor
+JR000315	Fragrance Expert
+JR000317	Retail Transformation Management
+
+8) Drop-down values 'L'Oreal Employee Group Names'
+Occasional/Seasonal Worker
+Fixed Term Employee
+Internship
+Long Term Employee
+Occasional/Seasonal Worker
+Apprenticeship
+Fixed Term Employee
+Internship
+Long Term Employee
+Apprenticeship
