@@ -15,6 +15,7 @@ export interface Worker {
   is_full_time: boolean | null;
   contract_hours: number | null;
   payroll_user_id: string | null;
+  effective_date: string | null;
   status: "unenriched" | "enriched" | "submitted";
   last_submitted_at: string | null;
   created_at: string;
@@ -43,6 +44,7 @@ export interface SubmissionHistory {
   is_full_time: boolean;
   contract_hours: number;
   payroll_user_id: string;
+  effective_date: string;
   submitted_at: string;
 }
 
@@ -55,4 +57,5 @@ export interface EnrichmentFormData {
   is_full_time: boolean;
   contract_hours: number;
   payroll_user_id: string;
+  effective_date: string;
 }

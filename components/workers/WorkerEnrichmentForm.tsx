@@ -49,6 +49,7 @@ export function WorkerEnrichmentForm({
     is_full_time: worker.is_full_time || false,
     contract_hours: worker.contract_hours || 0,
     payroll_user_id: worker.payroll_user_id || "",
+    effective_date: worker.effective_date || "",
   });
 
   const [submitting, setSubmitting] = useState(false);
@@ -70,7 +71,8 @@ export function WorkerEnrichmentForm({
     formData.job_specialisation_code !== "" &&
     formData.employee_group_name !== "" &&
     formData.contract_hours > 0 &&
-    formData.payroll_user_id !== "";
+    formData.payroll_user_id !== "" &&
+    formData.effective_date !== "";
 
   const handleSubmit = async () => {
     if (!isValid) return;
@@ -182,6 +184,21 @@ export function WorkerEnrichmentForm({
                 />
               </div>
 
+              {/* Is Full Time */}
+              <div className="flex items-center space-x-2 pt-6">
+                <Checkbox
+                  id="is_full_time"
+                  checked={formData.is_full_time}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      is_full_time: checked === true,
+                    }))
+                  }
+                />
+                <Label htmlFor="is_full_time">Full Time</Label>
+              </div>
+
               {/* Contract Hours */}
               <div className="space-y-2">
                 <Label htmlFor="contract_hours">Contract Hours *</Label>
@@ -215,19 +232,20 @@ export function WorkerEnrichmentForm({
                 />
               </div>
 
-              {/* Is Full Time */}
-              <div className="flex items-center space-x-2 pt-6">
-                <Checkbox
-                  id="is_full_time"
-                  checked={formData.is_full_time}
-                  onCheckedChange={(checked) =>
+              {/* Effective Date */}
+              <div className="space-y-2">
+                <Label htmlFor="effective_date">Effective Date *</Label>
+                <Input
+                  id="effective_date"
+                  type="date"
+                  value={formData.effective_date}
+                  onChange={(e) =>
                     setFormData((prev) => ({
                       ...prev,
-                      is_full_time: checked === true,
+                      effective_date: e.target.value,
                     }))
                   }
                 />
-                <Label htmlFor="is_full_time">Full Time</Label>
               </div>
             </div>
           </div>
