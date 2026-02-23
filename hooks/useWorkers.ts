@@ -2,34 +2,28 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { Worker, EnrichmentFormData } from "@/lib/types";
-import { createClient } from "@/lib/supabase";
 
 export function useWorkers() {
   const [workers, setWorkers] = useState<Worker[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const supabase = createClient();
-
   const fetchWorkers = useCallback(async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const { data, error: fetchError } = await supabase
-        .from("workers")
-        .select("*")
-        .order("created_at", { ascending: true });
-
-      if (fetchError) throw fetchError;
-      setWorkers((data as Worker[]) || []);
+      const res = await fetch("/api/workers");
+      if (!res.ok) throw new Error("Failed to load workers");
+      const data = await res.json();
+      setWorkers(data as Worker[]);
     } catch (err) {
       console.error("Error fetching workers:", err);
       setError(err instanceof Error ? err.message : "Failed to load workers");
     } finally {
       setLoading(false);
     }
-  }, [supabase]);
+  }, []);
 
   useEffect(() => {
     fetchWorkers();
@@ -37,30 +31,18 @@ export function useWorkers() {
 
   const submitWorker = useCallback(
     async (workerId: string, formData: EnrichmentFormData) => {
-      const now = new Date().toISOString();
+      const res = await fetch(`/api/workers/${workerId}/submit`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
-      const { error: updateError } = await supabase
-        .from("workers")
-        .update({
-          ...formData,
-          status: "submitted",
-          last_submitted_at: now,
-          updated_at: now,
-        })
-        .eq("id", workerId);
+      const body = await res.json();
+      if (!res.ok) {
+        throw new Error(body.error || "Failed to submit worker");
+      }
 
-      if (updateError) throw updateError;
-
-      // Create submission history snapshot
-      const { error: historyError } = await supabase
-        .from("submission_history")
-        .insert({
-          worker_id: workerId,
-          ...formData,
-          submitted_at: now,
-        });
-
-      if (historyError) throw historyError;
+      const { now } = body;
 
       // Update local state
       setWorkers((prev) =>
@@ -71,32 +53,21 @@ export function useWorkers() {
         )
       );
     },
-    [supabase]
+    []
   );
 
   const unenrichWorker = useCallback(
     async (workerId: string) => {
-      const now = new Date().toISOString();
+      const res = await fetch(`/api/workers/${workerId}/unenrich`, {
+        method: "POST",
+      });
 
-      const { error: updateError } = await supabase
-        .from("workers")
-        .update({
-          pay_rate: null,
-          pay_type: null,
-          job_title: null,
-          job_specialisation_code: null,
-          employee_group_name: null,
-          is_full_time: null,
-          contract_hours: null,
-          payroll_user_id: null,
-          effective_date: null,
-          status: "unenriched",
-          last_submitted_at: null,
-          updated_at: now,
-        })
-        .eq("id", workerId);
+      const body = await res.json();
+      if (!res.ok) {
+        throw new Error(body.error || "Failed to unenrich worker");
+      }
 
-      if (updateError) throw updateError;
+      const { now } = body;
 
       setWorkers((prev) =>
         prev.map((w) =>
@@ -120,7 +91,7 @@ export function useWorkers() {
         )
       );
     },
-    [supabase]
+    []
   );
 
   const unenrichedWorkers = workers.filter((w) => w.status === "unenriched");

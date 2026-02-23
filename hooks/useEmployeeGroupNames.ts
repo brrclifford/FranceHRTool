@@ -2,30 +2,24 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { EmployeeGroupName } from "@/lib/types";
-import { createClient } from "@/lib/supabase";
 
 export function useEmployeeGroupNames() {
   const [groupNames, setGroupNames] = useState<EmployeeGroupName[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const supabase = createClient();
-
   const fetchGroupNames = useCallback(async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from("employee_group_names")
-        .select("*")
-        .order("name", { ascending: true });
-
-      if (error) throw error;
-      setGroupNames((data as EmployeeGroupName[]) || []);
+      const res = await fetch("/api/employee-group-names");
+      if (!res.ok) throw new Error("Failed to load group names");
+      const data = await res.json();
+      setGroupNames(data as EmployeeGroupName[]);
     } catch (err) {
       console.error("Error fetching employee group names:", err);
     } finally {
       setLoading(false);
     }
-  }, [supabase]);
+  }, []);
 
   useEffect(() => {
     fetchGroupNames();
@@ -33,21 +27,26 @@ export function useEmployeeGroupNames() {
 
   const addGroupName = useCallback(
     async (name: string) => {
-      const { data, error } = await supabase
-        .from("employee_group_names")
-        .insert({ name })
-        .select()
-        .single();
+      const res = await fetch("/api/employee-group-names", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name }),
+      });
 
-      if (error) throw error;
+      if (!res.ok) {
+        const body = await res.json();
+        throw new Error(body.error || "Failed to add group name");
+      }
+
+      const data = await res.json() as EmployeeGroupName;
 
       setGroupNames((prev) =>
-        [...prev, data as EmployeeGroupName].sort((a, b) => a.name.localeCompare(b.name))
+        [...prev, data].sort((a, b) => a.name.localeCompare(b.name))
       );
 
-      return data as EmployeeGroupName;
+      return data;
     },
-    [supabase]
+    []
   );
 
   return { groupNames, loading, addGroupName };

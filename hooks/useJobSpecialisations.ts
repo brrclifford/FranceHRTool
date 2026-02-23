@@ -2,30 +2,24 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { JobSpecialisation } from "@/lib/types";
-import { createClient } from "@/lib/supabase";
 
 export function useJobSpecialisations() {
   const [specialisations, setSpecialisations] = useState<JobSpecialisation[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const supabase = createClient();
-
   const fetchSpecialisations = useCallback(async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from("job_specialisations")
-        .select("*")
-        .order("code", { ascending: true });
-
-      if (error) throw error;
-      setSpecialisations((data as JobSpecialisation[]) || []);
+      const res = await fetch("/api/job-specialisations");
+      if (!res.ok) throw new Error("Failed to load specialisations");
+      const data = await res.json();
+      setSpecialisations(data as JobSpecialisation[]);
     } catch (err) {
       console.error("Error fetching job specialisations:", err);
     } finally {
       setLoading(false);
     }
-  }, [supabase]);
+  }, []);
 
   useEffect(() => {
     fetchSpecialisations();
@@ -33,21 +27,26 @@ export function useJobSpecialisations() {
 
   const addSpecialisation = useCallback(
     async (code: string, title: string) => {
-      const { data, error } = await supabase
-        .from("job_specialisations")
-        .insert({ code, title })
-        .select()
-        .single();
+      const res = await fetch("/api/job-specialisations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code, title }),
+      });
 
-      if (error) throw error;
+      if (!res.ok) {
+        const body = await res.json();
+        throw new Error(body.error || "Failed to add specialisation");
+      }
+
+      const data = await res.json() as JobSpecialisation;
 
       setSpecialisations((prev) =>
-        [...prev, data as JobSpecialisation].sort((a, b) => a.code.localeCompare(b.code))
+        [...prev, data].sort((a, b) => a.code.localeCompare(b.code))
       );
 
-      return data as JobSpecialisation;
+      return data;
     },
-    [supabase]
+    []
   );
 
   return { specialisations, loading, addSpecialisation };
